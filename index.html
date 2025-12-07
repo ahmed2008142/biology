@@ -79,6 +79,11 @@
             border-bottom: 1px solid #e5e7eb;
             font-size: 0.95rem;
         }
+        .error-row {
+            background-color: #fef2f2;
+            color: #ef4444;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -326,7 +331,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // ******* تفعيل وضع التصحيح (ضروري جداً لتتبع أخطاء Firestore) *******
+        setLogLevel('debug');
         
         // ******* متغيرات Firebase الموفرة من البيئة *******
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -370,8 +378,8 @@
         // تهيئة Firebase والتوثيق
         async function initFirebaseAndAuth() {
             if (!firebaseConfig || !firebaseConfig.apiKey) {
-                authStatus.textContent = 'خطأ: لم يتم تهيئة Firebase بشكل صحيح.';
-                console.error("Firebase config is missing.");
+                authStatus.textContent = 'خطأ: لم يتم تهيئة Firebase بشكل صحيح. تحقق من __firebase_config.';
+                console.error("Firebase config is missing or invalid.");
                 return;
             }
 
@@ -386,19 +394,21 @@
                         userId = user.uid;
                         isAuthReady = true;
                         authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${userId.substring(0, 8)}...`;
-                        // ملاحظة: تم إزالة استدعاء setupRealtimeResultsListener() من هنا، وسيتم تشغيله فقط بعد إدخال كلمة المرور.
+                        console.log("Firebase Auth State Changed: User signed in with UID:", userId);
                     } else {
                         isAuthReady = true;
                         authStatus.textContent = 'تم تسجيل الدخول كمستخدم مجهول.';
-                        // ملاحظة: تم إزالة استدعاء setupRealtimeResultsListener() من هنا.
+                        console.log("Firebase Auth State Changed: User is anonymous/logged out.");
                     }
                 });
 
                 // محاولة تسجيل الدخول باستخدام الرمز المخصص أو كمجهول
                 if (authToken) {
                     await signInWithCustomToken(auth, authToken);
+                    console.log("Attempting sign in with custom token...");
                 } else {
                     await signInAnonymously(auth);
+                    console.log("Attempting anonymous sign in...");
                 }
 
             } catch (error) {
@@ -410,7 +420,7 @@
         // دالة حفظ النتيجة في Firestore
         async function saveResultsToFirestore(score, totalQuestions) {
             if (!isAuthReady || !db) {
-                console.error("Firestore not ready or user not authenticated.");
+                console.error("Firestore not ready or user not authenticated. Cannot save results.");
                 return;
             }
 
@@ -433,20 +443,19 @@
                     userId: userId || 'anonymous',
                     timestamp: serverTimestamp() // لتسجيل وقت الحفظ
                 });
-                console.log("Document successfully written with ID: ", docRef.id);
+                console.log("Document successfully written to:", publicResultsPath, " with ID:", docRef.id);
             } catch (e) {
-                console.error("Error adding document: ", e);
+                console.error("Error adding document (Saving Failed). Check security rules and path:", publicResultsPath, e);
+                // رسالة واجهة مستخدم إضافية تفيد بالفشل
+                reviewMessage.textContent += " (فشل حفظ النتيجة في القاعدة - تحقق من الاتصال والأذونات)";
             }
         }
         
         // دالة إعداد مستمع النتائج في الوقت الفعلي
         function setupRealtimeResultsListener() {
-            // التحقق من الجاهزية وضمان عدم تشغيل المستمع أكثر من مرة
             if (!isAuthReady || !db) {
-                // قد يحدث هذا إذا حاول المستخدم إدخال كلمة المرور بسرعة قبل اكتمال التوثيق
-                passwordMessage.textContent = 'جاري الاتصال بقاعدة البيانات، يرجى المحاولة بعد لحظات.';
-                passwordMessage.classList.remove('hidden');
-                setTimeout(() => passwordMessage.classList.add('hidden'), 3000);
+                console.error("Firestore not ready. Cannot attach real-time listener.");
+                resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">فشل الاتصال: قاعدة البيانات غير جاهزة أو التوثيق غير مكتمل.</td></tr>`;
                 return;
             }
 
@@ -455,10 +464,10 @@
                 return;
             }
             
-            // وضع علامة أن المستمع قد تم إعداده لمنع تكراره
+            const publicResultsPath = `artifacts/${appId}/public/data/${QUIZ_COLLECTION}`;
+            console.log("Attaching real-time listener to path:", publicResultsPath);
             isListenerAttached = true; 
 
-            const publicResultsPath = `artifacts/${appId}/public/data/${QUIZ_COLLECTION}`;
             const resultsQuery = query(collection(db, publicResultsPath));
             
             onSnapshot(resultsQuery, (snapshot) => {
@@ -466,6 +475,7 @@
                 
                 if (snapshot.empty) {
                     resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">لم يتم تسجيل أي نتائج بعد.</td></tr>`;
+                    console.log("Real-time results snapshot is empty.");
                     return;
                 }
 
@@ -483,7 +493,6 @@
                 });
 
                 results.forEach(result => {
-                    // تحويل تاريخ Firebase إلى صيغة سهلة القراءة
                     const date = result.timestamp ? new Date(result.timestamp.seconds * 1000).toLocaleDateString('ar-EG', {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -505,10 +514,15 @@
                     resultsTableBody.appendChild(row);
                 });
             }, (error) => {
-                console.error("Error listening to real-time results:", error);
-                passwordMessage.textContent = 'حدث خطأ في تحميل النتائج. يرجى التأكد من الأذونات.';
+                // ******* معالجة خطأ المستمع وإظهاره بوضوح *******
+                console.error("Error listening to real-time results (onSnapshot failed):", error);
+                const errorMessage = `خطأ في تحميل النتائج: فشل المستمع. السبب المحتمل: مشكلة في الأذونات أو مسار البيانات. (رسالة الخطأ: ${error.message})`;
+                resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">${errorMessage}</td></tr>`;
+                
+                // إظهار رسالة للمستخدم
+                passwordMessage.textContent = 'فشل في تحميل النتائج المباشرة. يرجى مراجعة Console لمعرفة تفاصيل الخطأ.';
                 passwordMessage.classList.remove('hidden');
-                resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-500">فشل في الاتصال بالنتائج المباشرة.</td></tr>`;
+                passwordMessage.classList.add('text-red-700');
             });
         }
         
