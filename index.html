@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل العلاج الوريدي الأولي | معهد التمريض</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* تعريف خطوط احترافية تدعم اللغة العربية والإنجليزية */
+        :root {
+            --font-main: 'Noto Naskh Arabic', 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+        }
+        /* تصميم العناوين وتأثيرات الحركة */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50%;
+            height: 4px;
+            background-color: #0d9488;
+            border-radius: 9999px;
+            transition: width 0.3s ease-in-out;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2), 0 4px 6px -2px rgba(13, 148, 136, 0.1);
+        }
+
+        /* تنسيقات خاصة بالاختبار */
+        .quiz-option {
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .quiz-option:hover {
+            background-color: #f0fdfa; /* Teal-50 */
+        }
+        
+        /* تنسيقات نتائج الاختبار */
+        .correct-answer {
+            background-color: #d1fae5; /* Green-100 */
+            border-color: #10b981; /* Green-500 */
+            font-weight: bold;
+        }
+        .wrong-answer {
+            background-color: #fee2e2; /* Red-100 */
+            border-color: #ef4444; /* Red-500 */
+            position: relative;
+        }
+        .wrong-answer::after {
+            content: 'إجابتك';
+            position: absolute;
+            top: -10px;
+            left: 5px;
+            padding: 2px 5px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- شريط التنقل (Navigation Bar) -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-xl font-bold text-teal-600 hover:text-teal-800 transition duration-300">
+                IV Therapy
+            </a>
+            <div class="hidden md:flex space-x-4 space-x-reverse text-sm">
+                <a href="#intro" class="text-gray-600 hover:text-teal-600 transition duration-300 px-3 py-2 rounded-md hover:bg-teal-50">المقدمة</a>
+                <a href="#procedure" class="text-gray-600 hover:text-teal-600 transition duration-300 px-3 py-2 rounded-md hover:bg-teal-50">الخطوات العملية</a>
+                <a href="#quiz-intro" class="text-gray-600 hover:text-red-600 transition duration-300 px-3 py-2 rounded-md hover:bg-red-50 font-bold">ابدأ الاختبار</a>
+            </div>
+            <button id="menu-button" class="md:hidden text-gray-600 hover:text-teal-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </nav>
+        <!-- قائمة الهواتف (Mobile Menu) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg pb-2">
+            <a href="#intro" class="block text-gray-700 hover:bg-teal-50 hover:text-teal-600 px-4 py-2 transition duration-300">المقدمة</a>
+            <a href="#equipment" class="block text-gray-700 hover:bg-teal-50 hover:text-teal-600 px-4 py-2 transition duration-300">الأدوات</a>
+            <a href="#quiz-intro" class="block text-gray-700 hover:bg-red-50 hover:text-red-600 px-4 py-2 transition duration-300 font-bold">ابدأ الاختبار</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- المحتوى الرئيسي للدليل (سيتم إخفاؤه عند بدء الاختبار) -->
+        <div id="main-guide-content">
+            
+            <!-- قسم البطل (Hero Section) -->
+            <section id="hero" class="relative bg-teal-50/50 pt-8 pb-16 md:pt-12 md:pb-24 overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 reveal">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+                    <div class="md:w-1/2 text-center md:text-right">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-teal-800 leading-tight mb-4">
+                            العلاج الوريدي الأولي
+                        </h1>
+                        <p class="text-xl sm:text-2xl text-gray-600 mb-8 font-light">
+                            دليلك الشامل والمبسط لإتقان مهارات التمريض الأساسية
+                        </p>
+                        <a href="#quiz-intro" class="inline-block bg-red-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transform hover:scale-105 transition duration-300 ease-in-out">
+                            انتقل للاختبار السريع
+                        </a>
+                    </div>
+                    <!-- Placeholder SVG for medical theme -->
+                    <div class="md:w-1/2 mt-10 md:mt-0 flex justify-center">
+                        <svg class="w-64 h-64 sm:w-80 sm:h-80 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11l-3 3m0 0l-3-3m3 3V4m0 16a2 2 0 100-4 2 2 0 000 4zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم 1: المقدمة والأهمية -->
+            <section id="intro" class="py-16 bg-white reveal">
+                <h2 class="section-title text-3xl font-bold text-center mb-12">
+                    ما هو العلاج الوريدي (IV)؟
+                </h2>
+                <!-- باقي المحتوى كما هو في الكود الأصلي... -->
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="reveal">
+                        <h3 class="text-2xl font-semibold text-teal-700 mb-4">التعريف المبسّط</h3>
+                        <p class="text-lg leading-relaxed text-gray-700">
+                            العلاج الوريدي هو إجراء طبي يتم فيه إدخال سائل (محلول أو دواء) مباشرة إلى مجرى دم المريض عبر الوريد. وهو من أهم المهارات التي يجب أن يتقنها طالب التمريض لأنه يتيح توصيل الأدوية والسوائل الغذائية بشكل سريع وفعال إلى الجسم.
+                        </p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.1s;">
+                        <h3 class="text-2xl font-semibold text-teal-700 mb-4">الأهداف الرئيسية للعلاج الوريدي</h3>
+                        <ul class="space-y-3 text-lg text-gray-700 list-disc pr-6">
+                            <li>تعويض السوائل والإلكتروليتات المفقودة (الجفاف).</li>
+                            <li>توصيل الأدوية التي لا يمكن إعطاؤها عن طريق الفم.</li>
+                            <li>إعطاء نقل الدم ومنتجاته.</li>
+                            <li>الحفاظ على وصول مفتوح للوريد في حالات الطوارئ.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم 2: الأدوات والمعدات (Equipment) -->
+            <section id="equipment" class="py-16 bg-teal-50 -mx-4 sm:-mx-6 lg:-mx-8 reveal">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-title text-3xl font-bold text-center mb-12">
+                        الأدوات الأساسية التي تحتاجها
+                    </h2>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        
+                        <!-- البطاقة 1: الكانيولا (Catheter) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect reveal">
+                            <div class="flex items-center space-x-4 space-x-reverse mb-3">
+                                <span class="text-3xl text-teal-600 font-bold">1.</span>
+                                <h3 class="text-xl font-bold text-teal-700">القسطرة الوريدية (الكانيولا)</h3>
+                            </div>
+                            <p class="text-gray-600 text-sm">
+                                الأنبوب الصغير الذي يتم إدخاله في الوريد. اختيار المقاس (Gauge) يعتمد على عمر المريض ونوع السائل.
+                            </p>
+                            <div class="mt-4">
+                                <p class="font-medium text-teal-600">ألوان مهمة يجب تذكرها:</p>
+                                <ul class="text-sm space-y-1 text-gray-600 mt-1 list-inside list-disc pr-4">
+                                    <li>**البرتقالي/الرمادي (14/16G):** للطوارئ والعمليات الكبرى (معدل تدفق عالٍ جداً).</li>
+                                    <li>**الأخضر (18G):** لنقل الدم وللسوائل الكثيفة.</li>
+                                    <li>**الوردي (20G):** الأكثر شيوعاً للاستخدام الروتيني.</li>
+                                    <li>**الأزرق (22G):** للأطفال وكبار السن والأوردة الضعيفة.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- البطاقة 2: المحاليل الوريدية (IV Fluids) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect reveal" style="transition-delay: 0.1s;">
+                            <div class="flex items-center space-x-4 space-x-reverse mb-3">
+                                <span class="text-3xl text-teal-600 font-bold">2.</span>
+                                <h3 class="text-xl font-bold text-teal-700">المحاليل الوريدية</h3>
+                            </div>
+                            <p class="text-gray-600 text-sm">
+                                السائل الذي سيتم حقنه. يجب التحقق من النوع، التاريخ، والجرعة الموصوفة.
+                            </p>
+                            <div class="mt-4">
+                                <p class="font-medium text-teal-600">أمثلة شائعة:</p>
+                                <ul class="text-sm space-y-1 text-gray-600 mt-1 list-inside list-disc pr-4">
+                                    <li>**نورمال سلاين (NS):** 0.9% صوديوم كلورايد، لتعويض السوائل.</li>
+                                    <li>**دكستروز 5% (D5W):** مصدر للطاقة والماء.</li>
+                                    <li>**لاكتيت رينجر (RL):** لتعويض السوائل في حالات النزف والحروق.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- البطاقة 3: مجموعة الإعطاء (Giving Set) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect reveal" style="transition-delay: 0.2s;">
+                            <div class="flex items-center space-x-4 space-x-reverse mb-3">
+                                <span class="text-3xl text-teal-600 font-bold">3.</span>
+                                <h3 class="text-xl font-bold text-teal-700">مجموعة الإعطاء والتعقيم</h3>
+                            </div>
+                            <p class="text-gray-600 text-sm">
+                                الأنبوب الذي يربط المحلول بالكانيولا. أدوات التعقيم والتثبيت لا غنى عنها.
+                            </p>
+                            <div class="mt-4">
+                                <p class="font-medium text-teal-600">عناصر مساعدة:</p>
+                                <ul class="text-sm space-y-1 text-gray-600 mt-1 list-inside list-disc pr-4">
+                                    <li>الضمادة الشفافة (Tegaderm) أو اللاصق الطبي للتثبيت.</li>
+                                    <li>المطهر الكحولي (Alcohol Wipes) أو الكلورهيكسيدين.</li>
+                                    <li>التورنيكيت (Tourniquet) لربط الذراع.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم 3: الخطوات العملية بالتفصيل (Procedure) -->
+            <section id="procedure" class="py-16 bg-white reveal">
+                <h2 class="section-title text-3xl font-bold text-center mb-12">
+                    الخطوات الإجرائية (Step-by-Step)
+                </h2>
+                
+                <ol class="space-y-8 max-w-3xl mx-auto">
+                    <!-- الخطوة 1: التحضير -->
+                    <li class="p-6 bg-blue-50 border-r-4 border-blue-500 rounded-lg shadow-md reveal">
+                        <h3 class="text-xl font-bold text-blue-700 mb-2">1. التحضير المسبق (أهم خطوة!)</h3>
+                        <p class="text-gray-700 text-sm">
+                            <span class="font-semibold text-teal-600">مبدأ الـ 5 حقوق:</span> تأكد من المريض الصحيح، الدواء الصحيح، الجرعة الصحيحة، الطريق الصحيح، والوقت الصحيح. اغسل يديك جيداً، ارتدِ القفازات، وجهز كل الأدوات بجوار المريض.
+                        </p>
+                    </li>
+
+                    <!-- الخطوة 2: اختيار الموقع -->
+                    <li class="p-6 bg-yellow-50 border-r-4 border-yellow-500 rounded-lg shadow-md reveal" style="transition-delay: 0.1s;">
+                        <h3 class="text-xl font-bold text-yellow-700 mb-2">2. اختيار الوريد المناسب</h3>
+                        <p class="text-gray-700 text-sm">
+                            ابحث عن وريد مرئي، مستقيم، وبعيد عن المفاصل. ابدأ دائماً بالأوردة في الأجزاء البعيدة من اليد (Distal) وانتقل للأعلى إذا لزم الأمر. استخدم التورنيكيت لربط الذراع فوق الموقع بـ 4-6 بوصات.
+                        </p>
+                    </li>
+                    
+                    <!-- الخطوة 3: التعقيم والإدخال -->
+                    <li class="p-6 bg-green-50 border-r-4 border-green-500 rounded-lg shadow-md reveal" style="transition-delay: 0.2s;">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">3. التعقيم وإدخال الكانيولا</h3>
+                        <p class="text-gray-700 text-sm">
+                            <span class="font-semibold text-teal-600">تقنية معقمة:</span> نظّف الموقع بحركة دائرية من الداخل للخارج بالمطهر، واتركه يجف تماماً. أمسك الكانيولا وادخلها بزاوية 10-30 درجة. عندما ترى "فلاش باك" (عودة الدم) في نهاية الكانيولا، ادفع الأنبوب البلاستيكي للأمام وادخلها بالكامل، ثم اسحب الإبرة (لا تعيد الإبرة أبداً!).
+                        </p>
+                    </li>
+
+                    <!-- الخطوة 4: التثبيت والربط -->
+                    <li class="p-6 bg-purple-50 border-r-4 border-purple-500 rounded-lg shadow-md reveal" style="transition-delay: 0.3s;">
+                        <h3 class="text-xl font-bold text-purple-700 mb-2">4. التثبيت والبدء</h3>
+                        <p class="text-gray-700 text-sm">
+                            ثبّت الكانيولا جيداً باللاصق أو الضمادة الشفافة. وصّل مجموعة الإعطاء التي قمت بتحضيرها مسبقاً (مفرغة من الهواء). اضبط معدل التنقيط (Drip Rate) وفقاً لأمر الطبيب. وثّق الإجراء كاملاً في سجل المريض.
+                        </p>
+                    </li>
+                </ol>
+            </section>
+
+            <!-- قسم 4: المضاعفات وكيفية التعامل معها -->
+            <section id="complications" class="py-16 bg-teal-50 -mx-4 sm:-mx-6 lg:-mx-8 reveal">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-title text-3xl font-bold text-center mb-12">
+                        المضاعفات الشائعة وكيفية الوقاية
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-8">
+                        
+                        <!-- المضاعفة 1: الارتشاح (Infiltration) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect border-t-4 border-red-500 reveal">
+                            <h3 class="text-xl font-bold text-red-700 mb-3">الارتشاح (Infiltration)</h3>
+                            <p class="text-gray-600 mb-3 text-sm">
+                                يحدث عندما يخرج السائل من الوريد ويتسرب إلى الأنسجة المحيطة.
+                            </p>
+                            <p class="text-xs font-medium text-red-500">العلامات: تورم، برودة، وشحوب في موقع الحقن، مع شعور بالألم.</p>
+                            <p class="text-xs font-medium text-gray-700 mt-2">الإجراء: أوقف التسريب فوراً، أزل الكانيولا، وضع كمادة دافئة لامتصاص السائل.</p>
+                        </div>
+
+                        <!-- المضاعفة 2: التهاب الوريد (Phlebitis) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect border-t-4 border-amber-500 reveal" style="transition-delay: 0.1s;">
+                            <h3 class="text-xl font-bold text-amber-700 mb-3">التهاب الوريد (Phlebitis)</h3>
+                            <p class="text-gray-600 mb-3 text-sm">
+                                التهاب في جدار الوريد، عادة بسبب التثبيت غير الجيد أو إدخال الكانيولا في وريد صغير جداً.
+                            </p>
+                            <p class="text-xs font-medium text-amber-500">العلامات: احمرار، سخونة، وألم على طول مسار الوريد.</p>
+                            <p class="text-xs font-medium text-gray-700 mt-2">الإجراء: أوقف التسريب، أزل الكانيولا، ضع كمادة دافئة، ووثق الحالة.</p>
+                        </div>
+
+                        <!-- المضاعفة 3: العدوى (Infection) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-effect border-t-4 border-pink-500 reveal" style="transition-delay: 0.2s;">
+                            <h3 class="text-xl font-bold text-pink-700 mb-3">العدوى الموضعية</h3>
+                            <p class="text-gray-600 mb-3 text-sm">
+                                تحدث بسبب اختراق البكتيريا للجلد أثناء الإدخال أو العناية غير الكافية.
+                            </p>
+                            <p class="text-xs font-medium text-pink-500">العلامات: إفرازات قيحية، حمى، احمرار شديد في الموقع.</p>
+                            <p class="text-xs font-medium text-gray-700 mt-2">الإجراء: أزل الكانيولا، نظف الجرح جيداً، واستشر الطبيب لوصف المضادات الحيوية.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم الخلاصة والموارد -->
+            <section id="summary" class="py-16 bg-white reveal">
+                <div class="text-center">
+                    <h2 class="section-title text-3xl font-bold mb-6">
+                        الخلاصة: الممارسة تجعلها سهلة!
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                        تذكر أن إتقان العلاج الوريدي يأتي بالممارسة المستمرة. ابدأ دائماً بالدمى التدريبية، راقب زملائك الخبراء، ولا تتردد في طلب المساعدة.
+                    </p>
+                    
+                    <div class="p-6 bg-teal-100 rounded-lg inline-block shadow-inner">
+                        <p class="text-xl font-semibold text-teal-800">
+                            مبادئ التمريض الأربعة الرئيسية:
+                        </p>
+                        <ul class="text-gray-700 mt-2 list-none space-y-1">
+                            <li><span class="font-bold">1. الأمان (Safety):</span> الوقاية من العدوى والمضاعفات.</li>
+                            <li><span class="font-bold">2. الدقة (Accuracy):</span> مطابقة أوامر الطبيب تماماً.</li>
+                            <li><span class="font-bold">3. اللطف (Gentleness):</span> التعامل برفق مع المريض.</li>
+                            <li><span class="font-bold">4. التوثيق (Documentation):</span> تسجيل كل خطوة بدقة.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- قسم الاختبار (Quiz Section) -->
+        <section id="quiz-intro" class="py-16 text-center reveal">
+            <h2 class="section-title text-4xl font-extrabold text-red-700 mb-6">
+                اختبار المراجعة السريع (10 أسئلة)
+            </h2>
+            <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                اختبر معلوماتك الأساسية عن العلاج الوريدي. عند البدء، سيتم إخفاء الشرح لزيادة التركيز.
+            </p>
+            <button id="start-quiz-btn" class="bg-red-600 text-white font-semibold py-4 px-10 text-xl rounded-full shadow-lg hover:bg-red-700 transform hover:scale-105 transition duration-300 ease-in-out">
+                ابدأ الاختبار الآن
+            </button>
+        </section>
+
+        <section id="quiz-section" class="hidden py-10">
+            <h2 class="text-3xl font-bold text-center text-teal-800 mb-10">أسئلة العلاج الوريدي</h2>
+            <form id="quiz-form" class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-2xl space-y-8">
+                <!-- هنا سيتم توليد الأسئلة بواسطة JavaScript -->
+            </form>
+
+            <div id="quiz-results" class="hidden mt-10 max-w-xl mx-auto p-8 bg-white rounded-xl shadow-2xl text-center border-t-4 border-teal-500">
+                <h3 class="text-3xl font-bold text-teal-700 mb-4">نتيجتك النهائية</h3>
+                <p id="score-text" class="text-5xl font-extrabold mb-6 text-gray-900"></p>
+                <button id="review-btn" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-600 transition duration-300">
+                    مراجعة الأخطاء والإجابات
+                </button>
+                <button onclick="window.location.reload()" class="bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition duration-300 mr-4">
+                    إعادة الاختبار
+                </button>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- التذييل (Footer) -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 دليل العلاج الوريدي الأولي. جميع الحقوق محفوظة لطلبة معاهد التمريض.</p>
+        </div>
+    </footer>
+
+    <script>
+        // بيانات أسئلة الاختبار (Questions Data)
+        const quizQuestions = [
+            {
+                question: "ما هو المقاس (Gauge) الأكثر شيوعاً للاستخدام الروتيني للبالغين في العلاج الوريدي؟",
+                options: ["الأزرق (22G)", "الوردي (20G)", "الأخضر (18G)", "البرتقالي (14G)"],
+                answer: "الوردي (20G)"
+            },
+            {
+                question: "ما هي الزاوية التقريبية التي يجب أن تدخل بها إبرة الكانيولا في الوريد؟",
+                options: ["45 درجة", "10-30 درجة", "90 درجة", "5-10 درجات"],
+                answer: "10-30 درجة"
+            },
+            {
+                question: "ظاهرة 'الفلاش باك' (Flashback) التي يراها الممرض عند إدخال الكانيولا تشير إلى:",
+                options: ["أن الكانيولا دخلت الشريان", "أن الكانيولا دخلت الوريد بنجاح", "أن الوريد ضعيف جداً", "أن الدم تجمد في الإبرة"],
+                answer: "أن الكانيولا دخلت الوريد بنجاح"
+            },
+            {
+                question: "أي من المحاليل التالية يسمى 'نورمال سلاين' ويستخدم لتعويض السوائل؟",
+                options: ["لاكتيت رينجر (RL)", "دكستروز 5%", "0.9% صوديوم كلورايد", "ماء معقم"],
+                answer: "0.9% صوديوم كلورايد"
+            },
+            {
+                question: "ما هي الخطوة الأولى التي يجب اتخاذها فور ملاحظة علامات 'الارتشاح' (Infiltration)؟",
+                options: ["تغيير موضع التورنيكيت", "تثبيت الكانيولا بلاصق إضافي", "زيادة معدل التنقيط لدفعه داخل الوريد", "إيقاف التسريب وإزالة الكانيولا فوراً"],
+                answer: "إيقاف التسريب وإزالة الكانيولا فوراً"
+            },
+            {
+                question: "العلامات المميزة لالتهاب الوريد (Phlebitis) هي:",
+                options: ["برودة وشحوب في الموقع", "احمرار وسخونة وألم على طول مسار الوريد", "خدر وتنميل في الأصابع", "نزيف حاد من موضع الحقن"],
+                answer: "احمرار وسخونة وألم على طول مسار الوريد"
+            },
+            {
+                question: "يجب أن تبدأ عملية البحث عن وريد مناسب في:",
+                options: ["الأوردة الكبيرة في أعلى الذراع أولاً", "الأوردة البعيدة (Distal) في اليد أولاً", "أوردة القدم لتجنب حركة اليد", "أي وريد مرئي بشكل جيد"],
+                answer: "الأوردة البعيدة (Distal) في اليد أولاً"
+            },
+            {
+                question: "ما هو اللون القياسي للكانيولا المستخدمة لنقل الدم ومنتجاته (للسوائل الكثيفة)؟",
+                options: ["الأزرق (22G)", "الوردي (20G)", "الأخضر (18G)", "الرمادي (16G)"],
+                answer: "الأخضر (18G)"
+            },
+            {
+                question: "ما هو أحد المبادئ الرئيسية الأربعة للتمريض التي يجب الالتزام بها عند إعطاء IV؟",
+                options: ["التسرع", "العبث", "التوثيق", "التجميل"],
+                answer: "التوثيق"
+            },
+            {
+                question: "لماذا يجب تنظيف موقع الإدخال بالمطهر بحركة دائرية من الداخل للخارج؟",
+                options: ["لتهدئة الجلد", "للتأكد من نظافة أكبر مساحة ممكنة وتجنب إعادة تلويث المنطقة المعقمة", "لتحفيز الوريد على الظهور", "ليس هناك سبب محدد، هي مجرد طريقة"],
+                answer: "للتأكد من نظافة أكبر مساحة ممكنة وتجنب إعادة تلويث المنطقة المعقمة"
+            }
+        ];
+
+        // العناصر الرئيسية في الصفحة
+        const mainGuideContent = document.getElementById('main-guide-content');
+        const quizIntroSection = document.getElementById('quiz-intro');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const quizSection = document.getElementById('quiz-section');
+        const quizForm = document.getElementById('quiz-form');
+        const quizResults = document.getElementById('quiz-results');
+        const scoreText = document.getElementById('score-text');
+        const reviewBtn = document.getElementById('review-btn');
+
+        // حالة الاختبار
+        let quizSubmitted = false;
+        
+        // **********************************************
+        // 1. وظيفة بناء الاختبار
+        // **********************************************
+        function buildQuiz() {
+            quizQuestions.forEach((q, index) => {
+                const qNumber = index + 1;
+                const qHtml = document.createElement('div');
+                qHtml.classList.add('p-5', 'bg-gray-50', 'rounded-lg', 'shadow-inner', 'border-r-4', 'border-teal-500', 'reveal');
+                
+                // السؤال
+                qHtml.innerHTML = `<h4 class="text-xl font-semibold text-gray-800 mb-4">سؤال ${qNumber}: ${q.question}</h4>`;
+                
+                // خيارات الإجابة
+                const optionsContainer = document.createElement('div');
+                optionsContainer.classList.add('space-y-3');
+
+                q.options.forEach((option, i) => {
+                    const optionId = `q${index}-opt${i}`;
+                    const optionLabel = document.createElement('label');
+                    optionLabel.classList.add('block', 'p-3', 'rounded-lg', 'border', 'border-gray-200', 'quiz-option');
+                    optionLabel.setAttribute('for', optionId);
+                    
+                    optionLabel.innerHTML = `
+                        <input type="radio" id="${optionId}" name="question${index}" value="${option}" class="ml-2 form-radio text-teal-600 focus:ring-teal-500" disabled>
+                        ${option}
+                    `;
+                    optionsContainer.appendChild(optionLabel);
+                    
+                    // تمكين إدخالات الراديو فقط بعد بنائها
+                    optionLabel.querySelector('input').disabled = false;
+                });
+
+                qHtml.appendChild(optionsContainer);
+                quizForm.appendChild(qHtml);
+            });
+
+            // إضافة زر الإرسال
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.id = 'submit-quiz-btn';
+            submitBtn.classList.add('w-full', 'bg-teal-600', 'text-white', 'font-semibold', 'py-3', 'mt-6', 'rounded-lg', 'shadow-xl', 'hover:bg-teal-700', 'transition', 'duration-300', 'transform', 'hover:scale-[1.01]');
+            submitBtn.textContent = 'إنهاء الاختبار ومعرفة النتيجة';
+            quizForm.appendChild(submitBtn);
+
+             // تفعيل تأثير التمرير للعناصر الجديدة
+             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // **********************************************
+        // 2. وظيفة بدء الاختبار
+        // **********************************************
+        startQuizBtn.addEventListener('click', () => {
+            // إخفاء المحتوى الرئيسي
+            mainGuideContent.classList.add('hidden');
+            quizIntroSection.classList.add('hidden');
+            
+            // إظهار قسم الاختبار
+            quizSection.classList.remove('hidden');
+            
+            // بناء الأسئلة
+            buildQuiz();
+            
+            // التمرير إلى بداية الاختبار
+            quizSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // **********************************************
+        // 3. وظيفة إرسال الاختبار وتصحيحه
+        // **********************************************
+        quizForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (quizSubmitted) return; // منع الإرسال المتعدد
+
+            let score = 0;
+            const totalQuestions = quizQuestions.length;
+            
+            // تعطيل زر الإرسال ومنع الإرسال المتعدد
+            document.getElementById('submit-quiz-btn').disabled = true;
+            quizSubmitted = true;
+
+            quizQuestions.forEach((q, index) => {
+                const questionContainer = quizForm.children[index];
+                const selectedOption = quizForm.querySelector(`input[name="question${index}"]:checked`);
+                const correctAnswer = q.answer;
+                
+                // 1. تحديد الإجابة الصحيحة وتلوينها بالأخضر
+                q.options.forEach((option, i) => {
+                    const optionId = `q${index}-opt${i}`;
+                    const label = questionContainer.querySelector(`label[for="${optionId}"]`);
+                    
+                    if (option === correctAnswer) {
+                        label.classList.add('correct-answer');
+                    }
+                });
+
+                // 2. التحقق من إجابة المستخدم
+                if (selectedOption) {
+                    // تعطيل جميع خيارات الإدخال في هذا السؤال
+                    questionContainer.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+                    
+                    const selectedValue = selectedOption.value;
+                    const selectedLabel = selectedOption.closest('label');
+
+                    if (selectedValue === correctAnswer) {
+                        score++;
+                        // الإجابة الصحيحة تم تلوينها بالفعل بالأخضر
+                    } else {
+                        // الإجابة خاطئة: تلوين إجابة المستخدم بالأحمر
+                        selectedLabel.classList.add('wrong-answer');
+                    }
+                }
+            });
+
+            // عرض النتيجة
+            scoreText.innerHTML = `لقد حصلت على <span class="text-teal-600">${score}</span> من أصل <span class="text-gray-800">${totalQuestions}</span>`;
+            
+            // إظهار شاشة النتائج وإخفاء زر الإرسال
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            quizResults.classList.remove('hidden');
+
+            // تلوين النص النهائي حسب النتيجة
+            if (score >= 8) {
+                scoreText.classList.add('text-teal-600');
+            } else if (score >= 5) {
+                scoreText.classList.add('text-yellow-600');
+            } else {
+                scoreText.classList.add('text-red-600');
+            }
+
+            // التمرير إلى النتائج
+            quizResults.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // زر مراجعة الأخطاء (يظهر بعد الحل)
+        reviewBtn.addEventListener('click', () => {
+            // التمرير إلى أعلى صفحة الاختبار
+            quizForm.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // **********************************************
+        // 4. وظيفة الحركة عند التمرير (Scroll Reveal) - مُعاد استخدامها
+        // **********************************************
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // لا نوقف المراقبة هنا للحفاظ على مرونة التنسيق
+                }
+            });
+        }, observerOptions);
+
+        revealElements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // 5. قائمة الهواتف المحمولة
+        const menuButton = document.getElementById('menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // إغلاق القائمة
+                mobileMenu.classList.add('hidden');
+
+                // التمرير السلس
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                         targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // 6. التمرير السلس (Smooth Scrolling) للروابط الداخلية
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>
