@@ -144,8 +144,7 @@
                             <li>**الظروف الصعبة (الأميبا):** تتحوصل الأميبا وتنقسم عدة مرات بالانشطار المتعدد، ثم تتحرر الأفراد الجديدة (تكاثر لاجنسي).</li>
                         </ul>
                     </div>
-                    [Image of التكاثر اللاجنسي بالانشطار الثنائي]
-
+                    
                     <!-- التبرعم -->
                     <div class="concept-box-green">
                         <h3 class="text-xl font-bold text-green-700">ب) التبرعم (Budding)</h3>
@@ -158,7 +157,6 @@
                         </ul>
                     </div>
                     
-
                     <!-- التكاثر بالجراثيم -->
                     <div class="concept-box">
                         <h3 class="text-xl font-bold text-indigo-700">ج) التكاثر بالجراثيم (Spore Reproduction)</h3>
@@ -170,8 +168,7 @@
                             <li>**الميزة الأهم:** أسرع وأكثر انتشاراً (خفيفة الوزن، صلبة الغلاف، تتحمل الجفاف).</li>
                         </ul>
                     </div>
-                    
-                    
+                                        
                     <!-- التجدد -->
                     <div class="concept-box-green">
                         <h3 class="text-xl font-bold text-green-700">د) التجدد (Regeneration)</h3>
@@ -189,8 +186,7 @@
                             </li>
                         </ul>
                     </div>
-                    
-                    
+                                        
                     <!-- التوالد البكري -->
                     <div class="concept-box">
                         <h3 class="text-xl font-bold text-indigo-700">هـ) التوالد البكري (Parthenogenesis)</h3>
@@ -215,7 +211,6 @@
                         </ul>
                     </div>
                     
-
                 </section>
                 
                 <section class="mt-10 p-6 bg-blue-50 rounded-lg shadow-xl">
@@ -239,7 +234,6 @@
                             4.  **الناتج:** ينتج الزيجوت (2ن) الذي ينمو إلى طور جرثومي جديد (تبدأ دورة جديدة).
                         </p>
                         
-
                         <div class="exam-note" style="border-left: 5px solid #059669; color: #065f46; background-color: #d1fae5;">
                             **خلاصة الامتحانات:** تعاقب الأجيال يضمن **التنوع الوراثي** (الجنسي) و**وفرة النسل** وسرعة انتشاره (اللاجنسي). الانقسام الميوزي يحدث فقط في الطور الجرثومي لإنتاج الجراثيم.
                         </div>
@@ -335,18 +329,28 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // ******* تم تحديث هذه الاستيرادات لاستخدام الحزمة الأساسية فقط لزيادة المرونة *******
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // ******* تفعيل وضع التصحيح (ضروري جداً لتتبع أخطاء Firestore) *******
         setLogLevel('debug');
         
         // ******* متغيرات Firebase الموفرة من البيئة *******
+        // استخدام قيم افتراضية آمنة في حالة عدم التوفير (مهم لحل مشكلة التهيئة)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const rawFirebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
         const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
+        let firebaseConfig;
+        try {
+            firebaseConfig = JSON.parse(rawFirebaseConfig);
+        } catch (e) {
+            console.error("Failed to parse firebase config:", e);
+            firebaseConfig = {}; // قيمة افتراضية فارغة إذا فشل التحليل
+        }
+
         // ******* كلمة المرور الإدارية (يمكن تغييرها) *******
         const ADMIN_PASSWORD = '123456'; 
 
@@ -354,8 +358,8 @@
         let auth;
         let userId = null;
         let isAuthReady = false;
-        let isListenerAttached = false; // flag لمنع تشغيل المستمع أكثر من مرة
-        let isAdminLoggedIn = false; // ***** جديد: حالة تسجيل الدخول الإداري *****
+        let isListenerAttached = false;
+        let isAdminLoggedIn = false;
 
         // متغيرات تخزين بيانات المستخدم بشكل مؤقت
         let userName = '';
@@ -382,46 +386,61 @@
         
         const QUIZ_COLLECTION = 'quiz_results';
 
-        // تهيئة Firebase والتوثيق
+        // دالة تهيئة Firebase والتوثيق
         async function initFirebaseAndAuth() {
-            if (!firebaseConfig || !firebaseConfig.apiKey) {
-                authStatus.textContent = 'خطأ: لم يتم تهيئة Firebase بشكل صحيح. تحقق من __firebase_config.';
-                console.error("Firebase config is missing or invalid.");
-                return;
-            }
+            // ***** تحديث: توفير config افتراضي إذا كان مفقودًا (لزيادة المرونة) *****
+            const tempConfig = {
+                apiKey: firebaseConfig.apiKey || 'PLACEHOLDER_KEY',
+                authDomain: firebaseConfig.authDomain || 'PLACEHOLDER.firebaseapp.com',
+                projectId: firebaseConfig.projectId || 'PLACEHOLDER',
+                storageBucket: firebaseConfig.storageBucket || 'PLACEHOLDER.appspot.com',
+                messagingSenderId: firebaseConfig.messagingSenderId || '1234567890',
+                appId: firebaseConfig.appId || '1:1234567890:web:abcdef123456'
+            };
 
-            try {
-                const app = initializeApp(firebaseConfig);
+            // استخدام initializeApp مرة واحدة فقط
+            if (getApps().length === 0) {
+                try {
+                    const app = initializeApp(tempConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    authStatus.textContent = 'تم تهيئة Firebase بنجاح.';
+                } catch (error) {
+                    console.error("Firebase Init error:", error);
+                    authStatus.textContent = `فشل التهيئة الأساسية: ${error.message}`;
+                    return;
+                }
+            } else {
+                const app = getApp();
                 db = getFirestore(app);
                 auth = getAuth(app);
+            }
 
-                // استخدام onAuthStateChanged لضمان أن جميع العمليات تبدأ بعد التوثيق
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${userId.substring(0, 8)}...`;
-                        console.log("Firebase Auth State Changed: User signed in with UID:", userId);
-                        
-                        // ***** الكود المحدث: تحقق مما إذا كان المدير قد سجل دخوله لتبدأ تحميل النتائج *****
-                        if (isAdminLoggedIn) {
-                            setupRealtimeResultsListener();
-                        }
-                        // ********************************************************************************
-
-                    } else {
-                        isAuthReady = true;
-                        authStatus.textContent = 'تم تسجيل الدخول كمستخدم مجهول.';
-                        console.log("Firebase Auth State Changed: User is anonymous/logged out.");
-                        
-                        // قد يكون المستخدم مجهولاً، ولكن المستمع يجب أن يبدأ إذا كان المدير قد طلب ذلك
-                        if (isAdminLoggedIn) {
-                            setupRealtimeResultsListener();
-                        }
+            // استخدام onAuthStateChanged لضمان أن جميع العمليات تبدأ بعد التوثيق
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${userId.substring(0, 8)}...`;
+                    console.log("Firebase Auth State Changed: User signed in with UID:", userId);
+                    
+                    if (isAdminLoggedIn) {
+                        setupRealtimeResultsListener();
                     }
-                });
 
-                // محاولة تسجيل الدخول باستخدام الرمز المخصص أو كمجهول
+                } else {
+                    isAuthReady = true;
+                    authStatus.textContent = 'تم تسجيل الدخول كمستخدم مجهول.';
+                    console.log("Firebase Auth State Changed: User is anonymous/logged out.");
+                    
+                    if (isAdminLoggedIn) {
+                        setupRealtimeResultsListener();
+                    }
+                }
+            });
+
+            // محاولة تسجيل الدخول باستخدام الرمز المخصص أو كمجهول
+            try {
                 if (authToken) {
                     await signInWithCustomToken(auth, authToken);
                     console.log("Attempting sign in with custom token...");
@@ -429,10 +448,9 @@
                     await signInAnonymously(auth);
                     console.log("Attempting anonymous sign in...");
                 }
-
             } catch (error) {
-                console.error("Firebase Auth or Init error:", error);
-                authStatus.textContent = `فشل الاتصال: ${error.message}`;
+                console.error("Firebase Sign In error:", error);
+                authStatus.textContent = `فشل تسجيل الدخول: ${error.message}`;
             }
         }
         
@@ -465,7 +483,6 @@
                 console.log("Document successfully written to:", publicResultsPath, " with ID:", docRef.id);
             } catch (e) {
                 console.error("Error adding document (Saving Failed). Check security rules and path:", publicResultsPath, e);
-                // رسالة واجهة مستخدم إضافية تفيد بالفشل
                 reviewMessage.textContent += " (فشل حفظ النتيجة في القاعدة - تحقق من الاتصال والأذونات)";
             }
         }
@@ -475,7 +492,6 @@
             if (!isAuthReady || !db) {
                 console.error("Firestore not ready. Cannot attach real-time listener. (isAuthReady:", isAuthReady, ", db:", !!db, ")");
                 resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">فشل الاتصال: قاعدة البيانات غير جاهزة أو التوثيق غير مكتمل.</td></tr>`;
-                // ***** مهم: تم إيقاف الـ 'return' لمنع تكرار الرسالة عند أول محاولة *****
                 return;
             }
 
@@ -490,7 +506,6 @@
 
             const resultsQuery = query(collection(db, publicResultsPath));
             
-            // ***** تحديث: إظهار رسالة تحميل صحيحة قبل بدء onSnapshot *****
             resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">جاري تحميل النتائج...</td></tr>`;
 
             onSnapshot(resultsQuery, (snapshot) => {
@@ -539,7 +554,15 @@
             }, (error) => {
                 // ******* معالجة خطأ المستمع وإظهاره بوضوح *******
                 console.error("Error listening to real-time results (onSnapshot failed):", error);
-                const errorMessage = `خطأ في تحميل النتائج: فشل المستمع. السبب المحتمل: مشكلة في الأذونات أو مسار البيانات. (رسالة الخطأ: ${error.message})`;
+                
+                // إذا كان الخطأ بسبب الأذونات (Permisson Denied)، يتم عرضه بوضوح
+                let errorMessage;
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'خطأ في التحميل: فشل المستمع. السبب: الأذونات غير كافية (Permission Denied). تأكد من صحة مسار البيانات وقواعد الأمان.';
+                } else {
+                    errorMessage = `خطأ في تحميل النتائج: فشل المستمع. السبب المحتمل: مشكلة في الاتصال أو مسار البيانات. (رسالة الخطأ: ${error.message})`;
+                }
+                
                 resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">${errorMessage}</td></tr>`;
                 
                 // إظهار رسالة للمستخدم
@@ -556,21 +579,20 @@
 
             if (inputPassword === ADMIN_PASSWORD) {
                 // كلمة المرور صحيحة
-                isAdminLoggedIn = true; // ***** تعيين حالة المدير *****
+                isAdminLoggedIn = true;
                 resultsTableContainer.classList.remove('hidden');
                 passwordMessage.classList.add('hidden');
                 
                 // تعطيل نموذج كلمة المرور بعد النجاح
                 document.getElementById('password-gate').innerHTML = '<p class="text-lg font-bold text-green-700">تم فتح النتائج بنجاح.</p>';
                 
-                // ***** الكود المحدث: إذا كان التوثيق جاهزاً بالفعل، ابدأ التحميل الآن *****
+                // إذا كان التوثيق جاهزاً بالفعل، ابدأ التحميل الآن
                 if (isAuthReady && db) {
                     setupRealtimeResultsListener();
                 } else {
                     console.log("Authentication not yet ready. Waiting for onAuthStateChanged to trigger listener.");
                     resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-yellow-600 font-bold">تم إدخال كلمة المرور. جاري انتظار اتصال قاعدة البيانات...</td></tr>`;
                 }
-                // ********************************************************************************
 
             } else {
                 // كلمة المرور غير صحيحة
