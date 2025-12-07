@@ -144,10 +144,11 @@
                             <li>**الظروف الصعبة (الأميبا):** تتحوصل الأميبا وتنقسم عدة مرات بالانشطار المتعدد، ثم تتحرر الأفراد الجديدة (تكاثر لاجنسي).</li>
                         </ul>
                     </div>
+                    [Image of التكاثر اللاجنسي بالانشطار الثنائي]
 
                     <!-- التبرعم -->
                     <div class="concept-box-green">
-                        <h3 class="text-xl font-bold text-green-700">ب) التبرعم (Budding) </h3>
+                        <h3 class="text-xl font-bold text-green-700">ب) التبرعم (Budding)</h3>
                         <p class="text-gray-700 mt-2">
                             **المفهوم:** ينشأ برعم صغير (نتوء) من الخلية الأم، ينمو وينفصل أو يبقى متصلاً لتكوين مستعمرة.
                         </p>
@@ -156,10 +157,11 @@
                             <li>**الهيدرا والإسفنج (عديد الخلايا):** البرعم ينشأ من مجموعة خلايا بينية. قد ينفصل أو يبقى متصلاً.</li>
                         </ul>
                     </div>
+                    
 
                     <!-- التكاثر بالجراثيم -->
                     <div class="concept-box">
-                        <h3 class="text-xl font-bold text-indigo-700">ج) التكاثر بالجراثيم (Spore Reproduction) </h3>
+                        <h3 class="text-xl font-bold text-indigo-700">ج) التكاثر بالجراثيم (Spore Reproduction)</h3>
                         <p class="text-gray-700 mt-2">
                             **المفهوم:** تنتج الكائنات أعداداً هائلة من الجراثيم (ن)، وكل جرثومة تنمو إلى فرد جديد (بالميتوزي).
                         </p>
@@ -168,6 +170,7 @@
                             <li>**الميزة الأهم:** أسرع وأكثر انتشاراً (خفيفة الوزن، صلبة الغلاف، تتحمل الجفاف).</li>
                         </ul>
                     </div>
+                    
                     
                     <!-- التجدد -->
                     <div class="concept-box-green">
@@ -186,6 +189,7 @@
                             </li>
                         </ul>
                     </div>
+                    
                     
                     <!-- التوالد البكري -->
                     <div class="concept-box">
@@ -210,11 +214,12 @@
                             <li>**الأهمية:** إنتاج أعداد كبيرة من نباتات متطابقة وراثياً في وقت قصير، وحل مشاكل المواسم.</li>
                         </ul>
                     </div>
+                    
 
                 </section>
                 
                 <section class="mt-10 p-6 bg-blue-50 rounded-lg shadow-xl">
-                    <h2 class="text-2xl font-bold text-blue-800 border-r-4 border-blue-600 pr-3 mb-6">2. دورة حياة الفوجير (تعاقب الأجيال المفصل) [Image of دورة حياة نبات الفوجير]</h2>
+                    <h2 class="text-2xl font-bold text-blue-800 border-r-4 border-blue-600 pr-3 mb-6">2. دورة حياة الفوجير (تعاقب الأجيال المفصل)</h2>
                     <div class="p-4 bg-white rounded-lg border border-blue-200">
                         
                         <h3 class="text-xl font-bold text-blue-700 mb-2">الجيل الأول: الطور الجرثومي (2ن) - السائد</h3>
@@ -233,6 +238,7 @@
                             3.  **الإخصاب:** يتطلب **وجود الماء** لتنتقل السابحات المهدبة إلى البويضة.
                             4.  **الناتج:** ينتج الزيجوت (2ن) الذي ينمو إلى طور جرثومي جديد (تبدأ دورة جديدة).
                         </p>
+                        
 
                         <div class="exam-note" style="border-left: 5px solid #059669; color: #065f46; background-color: #d1fae5;">
                             **خلاصة الامتحانات:** تعاقب الأجيال يضمن **التنوع الوراثي** (الجنسي) و**وفرة النسل** وسرعة انتشاره (اللاجنسي). الانقسام الميوزي يحدث فقط في الطور الجرثومي لإنتاج الجراثيم.
@@ -349,6 +355,7 @@
         let userId = null;
         let isAuthReady = false;
         let isListenerAttached = false; // flag لمنع تشغيل المستمع أكثر من مرة
+        let isAdminLoggedIn = false; // ***** جديد: حالة تسجيل الدخول الإداري *****
 
         // متغيرات تخزين بيانات المستخدم بشكل مؤقت
         let userName = '';
@@ -395,10 +402,22 @@
                         isAuthReady = true;
                         authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${userId.substring(0, 8)}...`;
                         console.log("Firebase Auth State Changed: User signed in with UID:", userId);
+                        
+                        // ***** الكود المحدث: تحقق مما إذا كان المدير قد سجل دخوله لتبدأ تحميل النتائج *****
+                        if (isAdminLoggedIn) {
+                            setupRealtimeResultsListener();
+                        }
+                        // ********************************************************************************
+
                     } else {
                         isAuthReady = true;
                         authStatus.textContent = 'تم تسجيل الدخول كمستخدم مجهول.';
                         console.log("Firebase Auth State Changed: User is anonymous/logged out.");
+                        
+                        // قد يكون المستخدم مجهولاً، ولكن المستمع يجب أن يبدأ إذا كان المدير قد طلب ذلك
+                        if (isAdminLoggedIn) {
+                            setupRealtimeResultsListener();
+                        }
                     }
                 });
 
@@ -454,8 +473,9 @@
         // دالة إعداد مستمع النتائج في الوقت الفعلي
         function setupRealtimeResultsListener() {
             if (!isAuthReady || !db) {
-                console.error("Firestore not ready. Cannot attach real-time listener.");
+                console.error("Firestore not ready. Cannot attach real-time listener. (isAuthReady:", isAuthReady, ", db:", !!db, ")");
                 resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">فشل الاتصال: قاعدة البيانات غير جاهزة أو التوثيق غير مكتمل.</td></tr>`;
+                // ***** مهم: تم إيقاف الـ 'return' لمنع تكرار الرسالة عند أول محاولة *****
                 return;
             }
 
@@ -470,6 +490,9 @@
 
             const resultsQuery = query(collection(db, publicResultsPath));
             
+            // ***** تحديث: إظهار رسالة تحميل صحيحة قبل بدء onSnapshot *****
+            resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">جاري تحميل النتائج...</td></tr>`;
+
             onSnapshot(resultsQuery, (snapshot) => {
                 resultsTableBody.innerHTML = ''; // مسح الجدول القديم
                 
@@ -533,14 +556,22 @@
 
             if (inputPassword === ADMIN_PASSWORD) {
                 // كلمة المرور صحيحة
+                isAdminLoggedIn = true; // ***** تعيين حالة المدير *****
                 resultsTableContainer.classList.remove('hidden');
                 passwordMessage.classList.add('hidden');
                 
                 // تعطيل نموذج كلمة المرور بعد النجاح
                 document.getElementById('password-gate').innerHTML = '<p class="text-lg font-bold text-green-700">تم فتح النتائج بنجاح.</p>';
                 
-                // ابدأ الاستماع للنتائج في الوقت الفعلي
-                setupRealtimeResultsListener(); 
+                // ***** الكود المحدث: إذا كان التوثيق جاهزاً بالفعل، ابدأ التحميل الآن *****
+                if (isAuthReady && db) {
+                    setupRealtimeResultsListener();
+                } else {
+                    console.log("Authentication not yet ready. Waiting for onAuthStateChanged to trigger listener.");
+                    resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-yellow-600 font-bold">تم إدخال كلمة المرور. جاري انتظار اتصال قاعدة البيانات...</td></tr>`;
+                }
+                // ********************************************************************************
+
             } else {
                 // كلمة المرور غير صحيحة
                 passwordMessage.textContent = 'كلمة المرور غير صحيحة. حاول مجدداً.';
