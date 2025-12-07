@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مراجعة التكاثر: اللاجنسي والجنسي</title>
+    <title>مراجعة التكاثر: شرح وكويز</title>
     <!-- تحميل Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -84,6 +84,15 @@
             color: #ef4444;
             font-weight: bold;
         }
+        .firebase-error {
+            color: #b91c1c;
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -105,7 +114,7 @@
                 <h2 class="text-2xl font-bold text-yellow-800 border-r-4 border-yellow-600 pr-3 mb-6">قبل البدء: تحضير شهادة التقدير وتسجيل النتيجة</h2>
                 
                 <p class="text-gray-700 mb-4 font-semibold">
-                    الرجاء إدخال اسمك ورقم هاتفك. هذه البيانات ستُحفظ مع نتيجتك (في قاعدة البيانات) لتتمكن من رؤية إنجازك.
+                    الرجاء إدخال اسمك ورقم هاتفك. هذه البيانات ستُحفظ مع نتيجتك (في قاعدة البيانات).
                 </p>
                 
                 <form id="user-data-form" class="mt-6 space-y-4">
@@ -120,6 +129,7 @@
                     <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-300">
                         حفظ البيانات وبدء المراجعة
                     </button>
+                    <!-- رسالة حالة الاتصال/الخطأ -->
                     <p id="auth-status" class="text-center text-sm mt-2 text-gray-500">جاري الاتصال بقاعدة البيانات...</p>
                 </form>
             </section>
@@ -144,7 +154,8 @@
                             <li>**الظروف الصعبة (الأميبا):** تتحوصل الأميبا وتنقسم عدة مرات بالانشطار المتعدد، ثم تتحرر الأفراد الجديدة (تكاثر لاجنسي).</li>
                         </ul>
                     </div>
-                    
+                    [Image of الانشطار الثنائي في الأميبا]
+
                     <!-- التبرعم -->
                     <div class="concept-box-green">
                         <h3 class="text-xl font-bold text-green-700">ب) التبرعم (Budding)</h3>
@@ -156,7 +167,8 @@
                             <li>**الهيدرا والإسفنج (عديد الخلايا):** البرعم ينشأ من مجموعة خلايا بينية. قد ينفصل أو يبقى متصلاً.</li>
                         </ul>
                     </div>
-                    
+                    [Image of التبرعم في الهيدرا]
+
                     <!-- التكاثر بالجراثيم -->
                     <div class="concept-box">
                         <h3 class="text-xl font-bold text-indigo-700">ج) التكاثر بالجراثيم (Spore Reproduction)</h3>
@@ -168,7 +180,8 @@
                             <li>**الميزة الأهم:** أسرع وأكثر انتشاراً (خفيفة الوزن، صلبة الغلاف، تتحمل الجفاف).</li>
                         </ul>
                     </div>
-                                        
+                    
+                    
                     <!-- التجدد -->
                     <div class="concept-box-green">
                         <h3 class="text-xl font-bold text-green-700">د) التجدد (Regeneration)</h3>
@@ -186,7 +199,8 @@
                             </li>
                         </ul>
                     </div>
-                                        
+                    [Image of التجدد في نجم البحر]
+                    
                     <!-- التوالد البكري -->
                     <div class="concept-box">
                         <h3 class="text-xl font-bold text-indigo-700">هـ) التوالد البكري (Parthenogenesis)</h3>
@@ -211,6 +225,7 @@
                         </ul>
                     </div>
                     
+
                 </section>
                 
                 <section class="mt-10 p-6 bg-blue-50 rounded-lg shadow-xl">
@@ -233,7 +248,8 @@
                             3.  **الإخصاب:** يتطلب **وجود الماء** لتنتقل السابحات المهدبة إلى البويضة.
                             4.  **الناتج:** ينتج الزيجوت (2ن) الذي ينمو إلى طور جرثومي جديد (تبدأ دورة جديدة).
                         </p>
-                        
+                        [Image of دورة حياة نبات الفوجير]
+
                         <div class="exam-note" style="border-left: 5px solid #059669; color: #065f46; background-color: #d1fae5;">
                             **خلاصة الامتحانات:** تعاقب الأجيال يضمن **التنوع الوراثي** (الجنسي) و**وفرة النسل** وسرعة انتشاره (اللاجنسي). الانقسام الميوزي يحدث فقط في الطور الجرثومي لإنتاج الجراثيم.
                         </div>
@@ -316,6 +332,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="storage-mode-message" class="text-center mt-4 p-2 rounded-lg font-bold"></div>
                 </div>
             </section>
 
@@ -329,16 +346,16 @@
     </div>
 
     <script type="module">
-        // ******* تم تحديث هذه الاستيرادات لاستخدام الحزمة الأساسية فقط لزيادة المرونة *******
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // ******* استيرادات Firebase *******
+        // نقوم باستيرادها حتى لو فشل الاتصال، لإبقاء الكود جاهزًا للعمل عند إصلاح مفتاح API
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, addDoc, onSnapshot, collection, query, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // ******* تفعيل وضع التصحيح (ضروري جداً لتتبع أخطاء Firestore) *******
         setLogLevel('debug');
         
         // ******* متغيرات Firebase الموفرة من البيئة *******
-        // استخدام قيم افتراضية آمنة في حالة عدم التوفير (مهم لحل مشكلة التهيئة)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const rawFirebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
         const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -348,19 +365,18 @@
             firebaseConfig = JSON.parse(rawFirebaseConfig);
         } catch (e) {
             console.error("Failed to parse firebase config:", e);
-            firebaseConfig = {}; // قيمة افتراضية فارغة إذا فشل التحليل
+            firebaseConfig = {};
         }
 
-        // ******* كلمة المرور الإدارية (يمكن تغييرها) *******
+        // ******* كلمة المرور الإدارية *******
         const ADMIN_PASSWORD = '123456'; 
+        const LOCAL_STORAGE_KEY = `quiz_results_${appId}`; // مفتاح لتخزين النتائج محليًا
 
-        let db;
-        let auth;
-        let userId = null;
-        let isAuthReady = false;
-        let isListenerAttached = false;
+        let db = null; 
+        let auth = null;
+        let isFirebaseDisabled = false; // علامة لتعطيل وظائف قاعدة البيانات
         let isAdminLoggedIn = false;
-
+        
         // متغيرات تخزين بيانات المستخدم بشكل مؤقت
         let userName = '';
         let userPhone = '';
@@ -377,6 +393,7 @@
         const scoreText = document.getElementById('score-text');
         const reviewMessage = document.getElementById('review-message');
         const authStatus = document.getElementById('auth-status');
+        const storageModeMessage = document.getElementById('storage-mode-message');
         
         // عناصر قسم الحماية الجديد
         const adminPasswordForm = document.getElementById('admin-password-form');
@@ -386,189 +403,212 @@
         
         const QUIZ_COLLECTION = 'quiz_results';
 
-        // دالة تهيئة Firebase والتوثيق
-        async function initFirebaseAndAuth() {
-            // ***** تحديث: توفير config افتراضي إذا كان مفقودًا (لزيادة المرونة) *****
-            const tempConfig = {
-                apiKey: firebaseConfig.apiKey || 'PLACEHOLDER_KEY',
-                authDomain: firebaseConfig.authDomain || 'PLACEHOLDER.firebaseapp.com',
-                projectId: firebaseConfig.projectId || 'PLACEHOLDER',
-                storageBucket: firebaseConfig.storageBucket || 'PLACEHOLDER.appspot.com',
-                messagingSenderId: firebaseConfig.messagingSenderId || '1234567890',
-                appId: firebaseConfig.appId || '1:1234567890:web:abcdef123456'
-            };
-
-            // استخدام initializeApp مرة واحدة فقط
-            if (getApps().length === 0) {
-                try {
-                    const app = initializeApp(tempConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-                    authStatus.textContent = 'تم تهيئة Firebase بنجاح.';
-                } catch (error) {
-                    console.error("Firebase Init error:", error);
-                    authStatus.textContent = `فشل التهيئة الأساسية: ${error.message}`;
-                    return;
-                }
-            } else {
-                const app = getApp();
-                db = getFirestore(app);
-                auth = getAuth(app);
-            }
-
-            // استخدام onAuthStateChanged لضمان أن جميع العمليات تبدأ بعد التوثيق
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    userId = user.uid;
-                    isAuthReady = true;
-                    authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${userId.substring(0, 8)}...`;
-                    console.log("Firebase Auth State Changed: User signed in with UID:", userId);
-                    
-                    if (isAdminLoggedIn) {
-                        setupRealtimeResultsListener();
-                    }
-
-                } else {
-                    isAuthReady = true;
-                    authStatus.textContent = 'تم تسجيل الدخول كمستخدم مجهول.';
-                    console.log("Firebase Auth State Changed: User is anonymous/logged out.");
-                    
-                    if (isAdminLoggedIn) {
-                        setupRealtimeResultsListener();
-                    }
-                }
-            });
-
-            // محاولة تسجيل الدخول باستخدام الرمز المخصص أو كمجهول
+        // دالة حفظ النتيجة في التخزين المحلي كحل بديل
+        function saveResultsToLocalStorage(score, totalQuestions) {
             try {
-                if (authToken) {
-                    await signInWithCustomToken(auth, authToken);
-                    console.log("Attempting sign in with custom token...");
-                } else {
-                    await signInAnonymously(auth);
-                    console.log("Attempting anonymous sign in...");
+                const existingResultsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
+                const existingResults = existingResultsJSON ? JSON.parse(existingResultsJSON) : [];
+                
+                const newResult = {
+                    studentName: userName,
+                    studentPhone: userPhone,
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    percentage: (score / totalQuestions) * 100,
+                    timestamp: new Date().getTime() // استخدام توقيت محلي
+                };
+
+                existingResults.push(newResult);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existingResults));
+                console.log("Result saved to LocalStorage successfully.");
+                reviewMessage.textContent += " (تم حفظ النتيجة مؤقتاً في المتصفح)";
+                
+                // إذا كان المدير قد قام بتسجيل الدخول، حدث الجدول المحلي
+                if (isAdminLoggedIn) {
+                    displayAdminResults(existingResults);
                 }
-            } catch (error) {
-                console.error("Firebase Sign In error:", error);
-                authStatus.textContent = `فشل تسجيل الدخول: ${error.message}`;
+            } catch (e) {
+                console.error("Error saving to LocalStorage:", e);
+                reviewMessage.textContent += " (فشل حفظ النتيجة مؤقتاً)";
             }
         }
         
-        // دالة حفظ النتيجة في Firestore
-        async function saveResultsToFirestore(score, totalQuestions) {
-            if (!isAuthReady || !db) {
-                console.error("Firestore not ready or user not authenticated. Cannot save results.");
+        // دالة جلب النتائج من التخزين المحلي
+        function loadResultsFromLocalStorage() {
+            try {
+                const existingResultsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
+                const results = existingResultsJSON ? JSON.parse(existingResultsJSON) : [];
+                return results;
+            } catch (e) {
+                console.error("Error loading from LocalStorage:", e);
+                return [];
+            }
+        }
+
+        // دالة تهيئة Firebase والتوثيق (مع فحص حاسم لمفتاح API)
+        async function initFirebaseAndAuth() {
+            
+            const apiKey = firebaseConfig.apiKey;
+            
+            // ***** الفحص الحاسم: إذا لم يكن مفتاح API صالحاً، يتم تعطيل Firebase *****
+            if (!apiKey || apiKey === 'PLACEHOLDER_KEY' || apiKey.length < 30) {
+                isFirebaseDisabled = true;
+                const errorMsg = '❌ خطأ حرج: لم يتم تهيئة Firebase. مفتاح API غير صحيح أو مفقود. سيتم استخدام التخزين المحلي المؤقت.';
+                
+                authStatus.textContent = errorMsg;
+                authStatus.classList.add('firebase-error');
+                storageModeMessage.textContent = 'وضع التخزين الحالي: مؤقت (Local Storage). يجب إصلاح API Key لتفعيل الحفظ الدائم.';
+                storageModeMessage.classList.add('bg-yellow-200', 'text-yellow-800');
+
+                console.warn(errorMsg);
+                return; // إيقاف التهيئة
+            }
+
+            // ***** المتابعة في حالة صحة مفتاح API *****
+            try {
+                const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // استخدام onAuthStateChanged لضمان أن جميع العمليات تبدأ بعد التوثيق
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) {
+                        try {
+                            if (authToken) {
+                                await signInWithCustomToken(auth, authToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Firebase Sign In error:", error);
+                            authStatus.textContent = `فشل تسجيل الدخول: ${error.message}`;
+                            return; 
+                        }
+                    }
+                    
+                    authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${auth.currentUser?.uid.substring(0, 8)}...`;
+                    storageModeMessage.textContent = 'وضع التخزين الحالي: دائم (Firebase Firestore).';
+                    storageModeMessage.classList.add('bg-green-200', 'text-green-800');
+
+                    // إذا كان المدير سجل الدخول قبل اكتمال التوثيق، ابدأ المستمع الآن
+                    if (isAdminLoggedIn) {
+                        setupRealtimeResultsListener();
+                    }
+                });
+                
+            } catch (error) {
+                // إذا فشلت التهيئة بعد اجتياز فحص مفتاح API (مثلاً فشل الاتصال)
+                isFirebaseDisabled = true;
+                const errorMsg = `❌ فشل تهيئة Firebase: ${error.message}. سيتم استخدام التخزين المحلي المؤقت.`;
+                authStatus.textContent = errorMsg;
+                authStatus.classList.add('firebase-error');
+                storageModeMessage.textContent = 'وضع التخزين الحالي: مؤقت (Local Storage). فشلت التهيئة.';
+                storageModeMessage.classList.add('bg-yellow-200', 'text-yellow-800');
+                console.error(errorMsg);
+            }
+        }
+        
+        // دالة مشتركة لحفظ النتائج (تستخدم Firebase أو LocalStorage)
+        async function saveQuizResult(score, totalQuestions) {
+            if (isFirebaseDisabled || !db) {
+                saveResultsToLocalStorage(score, totalQuestions);
                 return;
             }
 
-            // المسار العام للنتائج: /artifacts/{appId}/public/data/quiz_results
+            // منطق حفظ Firebase الدائم
             const publicResultsPath = `artifacts/${appId}/public/data/${QUIZ_COLLECTION}`;
             
             try {
                 const docRef = await addDoc(collection(db, publicResultsPath), {
-                    // بيانات الطالب التي تم إدخالها قبل البدء
                     studentName: userName,
                     studentPhone: userPhone,
-                    
-                    // نتائج الكويز
                     score: score,
                     totalQuestions: totalQuestions,
                     percentage: (score / totalQuestions) * 100,
-                    
-                    // بيانات إدارية
                     appId: appId,
-                    userId: userId || 'anonymous',
-                    timestamp: serverTimestamp() // لتسجيل وقت الحفظ
+                    userId: auth.currentUser?.uid || 'anonymous',
+                    timestamp: serverTimestamp()
                 });
-                console.log("Document successfully written to:", publicResultsPath, " with ID:", docRef.id);
+                console.log("Document successfully written with ID:", docRef.id);
+                reviewMessage.textContent += " (تم حفظ النتيجة في قاعدة البيانات)";
             } catch (e) {
-                console.error("Error adding document (Saving Failed). Check security rules and path:", publicResultsPath, e);
-                reviewMessage.textContent += " (فشل حفظ النتيجة في القاعدة - تحقق من الاتصال والأذونات)";
+                console.error("Error adding document (Saving Failed). Check security rules:", e);
+                reviewMessage.textContent += " (فشل حفظ النتيجة في القاعدة - تحقق من الأذونات)";
+                // محاولة الحفظ المحلي كحل أخير
+                saveResultsToLocalStorage(score, totalQuestions);
             }
         }
         
-        // دالة إعداد مستمع النتائج في الوقت الفعلي
-        function setupRealtimeResultsListener() {
-            if (!isAuthReady || !db) {
-                console.error("Firestore not ready. Cannot attach real-time listener. (isAuthReady:", isAuthReady, ", db:", !!db, ")");
-                resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">فشل الاتصال: قاعدة البيانات غير جاهزة أو التوثيق غير مكتمل.</td></tr>`;
+        // دالة عرض النتائج (تستخدم Firebase أو LocalStorage)
+        function displayAdminResults(results) {
+            resultsTableBody.innerHTML = '';
+
+            if (!results || results.length === 0) {
+                resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">لم يتم تسجيل أي نتائج بعد.</td></tr>`;
                 return;
             }
 
-            if (isListenerAttached) {
-                console.warn("Listener is already attached. Skipping.");
+            // فرز النتائج حسب التاريخ (الأحدث أولاً)
+            results.sort((a, b) => {
+                // التعامل مع توقيت Firebase (seconds) أو توقيت LocalStorage (milliseconds)
+                const timeA = a.timestamp?.seconds ? a.timestamp.seconds * 1000 : a.timestamp;
+                const timeB = b.timestamp?.seconds ? b.timestamp.seconds * 1000 : b.timestamp;
+                return timeB - timeA;
+            });
+
+            results.forEach(result => {
+                const date = result.timestamp ? new Date(result.timestamp.seconds * 1000 || result.timestamp).toLocaleDateString('ar-EG', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : 'غير متوفر';
+                
+                const score = result.score || 0;
+                const totalQuestions = result.totalQuestions || 1;
+                const percentage = (result.percentage || 0).toFixed(0);
+                
+                const row = document.createElement('tr');
+                const scoreColor = percentage >= 90 ? 'text-green-600 font-bold' : (percentage >= 70 ? 'text-yellow-600' : 'text-red-600');
+                
+                row.innerHTML = `
+                    <td class="whitespace-nowrap">${result.studentName}</td>
+                    <td class="whitespace-nowrap">${result.studentPhone}</td>
+                    <td class="whitespace-nowrap ${scoreColor}">${score} / ${totalQuestions} (${percentage}%)</td>
+                    <td class="whitespace-nowrap">${date}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+        }
+        
+        // دالة إعداد مستمع النتائج في الوقت الفعلي (لتخزين Firebase فقط)
+        function setupRealtimeResultsListener() {
+            if (isFirebaseDisabled || !db) {
+                // إذا تم تعطيل Firebase، يتم عرض النتائج المخزنة محليًا فقط (يتم استدعاء displayAdminResults أدناه)
+                console.log("Firebase is disabled. Switching to Local Storage display.");
+                const localResults = loadResultsFromLocalStorage();
+                displayAdminResults(localResults);
                 return;
             }
-            
+
+            // منطق Firebase: استخدام onSnapshot
             const publicResultsPath = `artifacts/${appId}/public/data/${QUIZ_COLLECTION}`;
-            console.log("Attaching real-time listener to path:", publicResultsPath);
-            isListenerAttached = true; 
+            console.log("Attaching real-time listener to Firebase path:", publicResultsPath);
 
             const resultsQuery = query(collection(db, publicResultsPath));
             
-            resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">جاري تحميل النتائج...</td></tr>`;
+            resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">جاري تحميل النتائج المباشرة من Firebase...</td></tr>`;
 
             onSnapshot(resultsQuery, (snapshot) => {
-                resultsTableBody.innerHTML = ''; // مسح الجدول القديم
-                
-                if (snapshot.empty) {
-                    resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">لم يتم تسجيل أي نتائج بعد.</td></tr>`;
-                    console.log("Real-time results snapshot is empty.");
-                    return;
-                }
-
                 const results = [];
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    results.push(data);
-                });
-                
-                // فرز النتائج تنازلياً حسب التاريخ
-                results.sort((a, b) => {
-                    const timeA = a.timestamp?.seconds || 0;
-                    const timeB = b.timestamp?.seconds || 0;
-                    return timeB - timeA;
-                });
-
-                results.forEach(result => {
-                    const date = result.timestamp ? new Date(result.timestamp.seconds * 1000).toLocaleDateString('ar-EG', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'غير متوفر';
-                    
-                    const score = result.score || 0;
-                    const totalQuestions = result.totalQuestions || 1;
-                    const percentage = (result.percentage || 0).toFixed(0);
-                    
-                    const row = document.createElement('tr');
-                    const scoreColor = percentage >= 90 ? 'text-green-600 font-bold' : (percentage >= 70 ? 'text-yellow-600' : 'text-red-600');
-                    
-                    row.innerHTML = `
-                        <td class="whitespace-nowrap">${result.studentName}</td>
-                        <td class="whitespace-nowrap">${result.studentPhone}</td>
-                        <td class="whitespace-nowrap ${scoreColor}">${score} / ${totalQuestions} (${percentage}%)</td>
-                        <td class="whitespace-nowrap">${date}</td>
-                    `;
-                    resultsTableBody.appendChild(row);
-                });
+                snapshot.forEach(doc => results.push(doc.data()));
+                displayAdminResults(results); // عرض البيانات المستلمة
             }, (error) => {
-                // ******* معالجة خطأ المستمع وإظهاره بوضوح *******
                 console.error("Error listening to real-time results (onSnapshot failed):", error);
                 
-                // إذا كان الخطأ بسبب الأذونات (Permisson Denied)، يتم عرضه بوضوح
-                let errorMessage;
-                if (error.code === 'permission-denied') {
-                    errorMessage = 'خطأ في التحميل: فشل المستمع. السبب: الأذونات غير كافية (Permission Denied). تأكد من صحة مسار البيانات وقواعد الأمان.';
-                } else {
-                    errorMessage = `خطأ في تحميل النتائج: فشل المستمع. السبب المحتمل: مشكلة في الاتصال أو مسار البيانات. (رسالة الخطأ: ${error.message})`;
-                }
+                let errorMessage = (error.code === 'permission-denied') ?
+                    'خطأ في التحميل: فشل المستمع. السبب: الأذونات غير كافية.' :
+                    `خطأ في تحميل النتائج: فشل المستمع. (الرسالة: ${error.message})`;
                 
                 resultsTableBody.innerHTML = `<tr><td colspan="4" class="error-row text-center py-4">${errorMessage}</td></tr>`;
-                
-                // إظهار رسالة للمستخدم
-                passwordMessage.textContent = 'فشل في تحميل النتائج المباشرة. يرجى مراجعة Console لمعرفة تفاصيل الخطأ.';
-                passwordMessage.classList.remove('hidden');
-                passwordMessage.classList.add('text-red-700');
             });
         }
         
@@ -578,27 +618,20 @@
             const inputPassword = document.getElementById('admin-password').value;
 
             if (inputPassword === ADMIN_PASSWORD) {
-                // كلمة المرور صحيحة
                 isAdminLoggedIn = true;
                 resultsTableContainer.classList.remove('hidden');
                 passwordMessage.classList.add('hidden');
                 
-                // تعطيل نموذج كلمة المرور بعد النجاح
                 document.getElementById('password-gate').innerHTML = '<p class="text-lg font-bold text-green-700">تم فتح النتائج بنجاح.</p>';
                 
-                // إذا كان التوثيق جاهزاً بالفعل، ابدأ التحميل الآن
-                if (isAuthReady && db) {
-                    setupRealtimeResultsListener();
-                } else {
-                    console.log("Authentication not yet ready. Waiting for onAuthStateChanged to trigger listener.");
-                    resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-yellow-600 font-bold">تم إدخال كلمة المرور. جاري انتظار اتصال قاعدة البيانات...</td></tr>`;
-                }
+                // ابدأ التحميل (سواء من Firebase أو LocalStorage)
+                setupRealtimeResultsListener();
 
             } else {
                 // كلمة المرور غير صحيحة
                 passwordMessage.textContent = 'كلمة المرور غير صحيحة. حاول مجدداً.';
                 passwordMessage.classList.remove('hidden');
-                document.getElementById('admin-password').value = ''; // مسح الإدخال
+                document.getElementById('admin-password').value = '';
             }
         });
         
@@ -628,7 +661,7 @@
         });
 
 
-        // بيانات وأسئلة الكويز (كما هي)
+        // بيانات وأسئلة الكويز (لم يتم تغييرها)
         const questions = [
             { question: "أي الكائنات التالية هو الوحيد الذي يختفي فيه الفرد الأبوي بعد التكاثر؟", options: ["الهيدرا", "نجم البحر", "فطر الخميرة", "الأميبا"], answer: "الأميبا" },
             { question: "ما نوع الانقسام الذي يحدث عند نمو الجرثومة (ن) لتعطي كائناً كاملاً؟", options: ["انقسام ميوزي", "انشطار ثنائي", "انقسام ميتوزي", "إخصاب"], answer: "انقسام ميتوزي" },
@@ -692,9 +725,7 @@
         submitButton.addEventListener('click', () => {
             if (resultsDiv.classList.contains('active')) return;
 
-            // التأكد من إدخال البيانات قبل محاولة حفظ النتيجة
             if (!userName || !userPhone) {
-                // استخدام مربع رسالة مخصص بدلاً من alert()
                 const messageBox = document.createElement('div');
                 messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
                 messageBox.innerHTML = `
@@ -715,7 +746,7 @@
 
             let score = 0;
             const totalQuestions = questions.length;
-            const requiredScore = totalQuestions * 0.9; // 90% للحصول على شهادة (14 سؤال صحيح على الأقل)
+            const requiredScore = totalQuestions * 0.9;
 
             questions.forEach((q, index) => {
                 const isCorrect = selectedAnswers[index] === q.answer;
@@ -739,8 +770,9 @@
                 }
             });
             
-            // ******* الحفظ في قاعدة البيانات هنا *******
-            saveResultsToFirestore(score, totalQuestions);
+            // ******* الحفظ في قاعدة البيانات أو التخزين المحلي *******
+            saveQuizResult(score, totalQuestions);
+           
 
             // عرض النتائج
             const percentage = (score / totalQuestions) * 100;
@@ -761,12 +793,11 @@
 
 
             resultsDiv.classList.remove('hidden');
-            resultsDiv.classList.add('active'); // وضع علامة أن الكويز انتهى
+            resultsDiv.classList.add('active');
             submitButton.disabled = true;
             submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
             submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
 
-            // نقل المستخدم للنتيجة
             document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
         });
 
