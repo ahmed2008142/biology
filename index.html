@@ -415,7 +415,7 @@
                     score: score,
                     totalQuestions: totalQuestions,
                     percentage: (score / totalQuestions) * 100,
-                    timestamp: new Date().getTime() // استخدام توقيت محلي
+                    timestamp: new Date().getTime() // استخدام توقيت محلي بالمللي ثانية
                 };
 
                 existingResults.push(newResult);
@@ -488,6 +488,7 @@
                     
                     authStatus.textContent = `تم الاتصال بنجاح. معرف المستخدم: ${auth.currentUser?.uid.substring(0, 8)}...`;
                     storageModeMessage.textContent = 'وضع التخزين الحالي: دائم (Firebase Firestore).';
+                    storageModeMessage.classList.remove('bg-yellow-200', 'text-yellow-800');
                     storageModeMessage.classList.add('bg-green-200', 'text-green-800');
 
                     // إذا كان المدير سجل الدخول قبل اكتمال التوثيق، ابدأ المستمع الآن
@@ -503,6 +504,7 @@
                 authStatus.textContent = errorMsg;
                 authStatus.classList.add('firebase-error');
                 storageModeMessage.textContent = 'وضع التخزين الحالي: مؤقت (Local Storage). فشلت التهيئة.';
+                storageModeMessage.classList.remove('bg-green-200', 'text-green-800');
                 storageModeMessage.classList.add('bg-yellow-200', 'text-yellow-800');
                 console.error(errorMsg);
             }
@@ -539,7 +541,7 @@
             }
         }
         
-        // دالة عرض النتائج (تستخدم Firebase أو LocalStorage)
+        // دالة عرض النتائج (تستخدم Firebase أو LocalStorage) - تم إصلاح منطق التاريخ هنا
         function displayAdminResults(results) {
             resultsTableBody.innerHTML = '';
 
@@ -548,18 +550,23 @@
                 return;
             }
 
-            // فرز النتائج حسب التاريخ (الأحدث أولاً)
+            // 1. فرز النتائج حسب التاريخ (الأحدث أولاً)
             results.sort((a, b) => {
-                // التعامل مع توقيت Firebase (seconds) أو توقيت LocalStorage (milliseconds)
-                const timeA = a.timestamp?.seconds ? a.timestamp.seconds * 1000 : a.timestamp;
-                const timeB = b.timestamp?.seconds ? b.timestamp.seconds * 1000 : b.timestamp;
+                // استخلاص قيمة التوقيت بالمللي ثانية بشكل آمن
+                const timeA = a.timestamp?.seconds ? a.timestamp.seconds * 1000 : (typeof a.timestamp === 'number' ? a.timestamp : 0);
+                const timeB = b.timestamp?.seconds ? b.timestamp.seconds * 1000 : (typeof b.timestamp === 'number' ? b.timestamp : 0);
                 return timeB - timeA;
             });
 
             results.forEach(result => {
-                const date = result.timestamp ? new Date(result.timestamp.seconds * 1000 || result.timestamp).toLocaleDateString('ar-EG', {
+                // 2. استخلاص التوقيت بالمللي ثانية بشكل آمن للعرض
+                const timestampMs = result.timestamp?.seconds ? result.timestamp.seconds * 1000 : (typeof result.timestamp === 'number' ? result.timestamp : null);
+
+                const date = timestampMs ? new Date(timestampMs).toLocaleDateString('ar-EG', {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit'
                 }) : 'غير متوفر';
                 
                 const score = result.score || 0;
@@ -579,10 +586,10 @@
             });
         }
         
-        // دالة إعداد مستمع النتائج في الوقت الفعلي (لتخزين Firebase فقط)
+        // دالة إعداد مستمع النتائج في الوقت الفعلي (لتخزين Firebase أو LocalStorage)
         function setupRealtimeResultsListener() {
             if (isFirebaseDisabled || !db) {
-                // إذا تم تعطيل Firebase، يتم عرض النتائج المخزنة محليًا فقط (يتم استدعاء displayAdminResults أدناه)
+                // إذا تم تعطيل Firebase، يتم عرض النتائج المخزنة محليًا فقط
                 console.log("Firebase is disabled. Switching to Local Storage display.");
                 const localResults = loadResultsFromLocalStorage();
                 displayAdminResults(localResults);
@@ -596,6 +603,16 @@
             const resultsQuery = query(collection(db, publicResultsPath));
             
             resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">جاري تحميل النتائج المباشرة من Firebase...</td></tr>`;
+
+            // يجب التأكد من أن التوثيق قد اكتمل قبل محاولة فتح المستمع
+            if (!auth || !auth.currentUser) {
+                console.warn("Auth not ready, cannot setup Firebase listener yet.");
+                // عرض النتائج المحلية كخطة احتياطية حتى يكتمل التوثيق
+                const localResults = loadResultsFromLocalStorage();
+                displayAdminResults(localResults);
+                return;
+            }
+
 
             onSnapshot(resultsQuery, (snapshot) => {
                 const results = [];
